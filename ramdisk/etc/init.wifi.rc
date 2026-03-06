@@ -35,6 +35,11 @@ on post-fs-data
 
     # Set permissions for firmware path control
     chown wifi wifi /sys/module/dhd/parameters/firmware_path
+    chown wifi wifi /sys/module/dhd/parameters/nvram_path
+
+    # Set WiFi firmware and NVRAM paths to vendor partition
+    write /sys/module/dhd/parameters/firmware_path /vendor/etc/wifi/bcmdhd_sta.bin
+    write /sys/module/dhd/parameters/nvram_path /vendor/etc/wifi/nvram_net.txt
 
 on boot
     # Pcie WiFi T-put setting

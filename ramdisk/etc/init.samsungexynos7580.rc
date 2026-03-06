@@ -1,20 +1,31 @@
-import init.samsungexynos7580.usb.rc
-import init.baseband.rc
-import init.wifi.rc
-import init.samsung.rc
-import init.power.rc
-import init.target.rc
+import /vendor/etc/init/hw/init.samsungexynos7580.usb.rc
+import /vendor/etc/init/hw/init.baseband.rc
+import /vendor/etc/init/hw/init.wifi.rc
+import /vendor/etc/init/hw/init.samsung.rc
+
+import /vendor/etc/init/hw/init.power.rc
+import /vendor/etc/init/hw/init.target.rc
 
 on early-init
     mount debugfs /sys/kernel/debug /sys/kernel/debug mode=755
 
-    # ZRAM setup
-    write /sys/block/zram0/comp_algorithm lzo
-    write /proc/sys/vm/page-cluster 0
+    mkdir /dev/cpuset 0755 root root
+    mkdir /dev/stune 0755 root root
+    mkdir /dev/freezer 0755 root root
+    mkdir /metadata 0771 root system
+
+    # Mount bpf fs
+    mount bpf bpf /sys/fs/bpf nodev noexec nosuid
 
 on init
     # RIL <-> audioserver comm
     chmod 0644 /proc/cmdline
+
+    mkdir /preload 0771 system system
+
+    # Symlinks for legacy compatibility
+    symlink /system/vendor /vendor
+    symlink /system/etc /etc
 
     # See storage config details at http://source.android.com/tech/storage/
     mkdir /mnt/shell/emulated 0700 shell shell
@@ -22,6 +33,18 @@ on init
 
     # CPUSETS permission
     chmod 0660 /dev/cpuctl
+    mkdir /dev/cpuset/foreground
+    copy /dev/cpuset/cpus /dev/cpuset/foreground/cpus
+    copy /dev/cpuset/mems /dev/cpuset/foreground/mems
+    mkdir /dev/cpuset/background
+    copy /dev/cpuset/cpus /dev/cpuset/background/cpus
+    copy /dev/cpuset/mems /dev/cpuset/background/mems
+    mkdir /dev/cpuset/system-background
+    copy /dev/cpuset/cpus /dev/cpuset/system-background/cpus
+    copy /dev/cpuset/mems /dev/cpuset/system-background/mems
+    mkdir /dev/cpuset/top-app
+    copy /dev/cpuset/cpus /dev/cpuset/top-app/cpus
+    copy /dev/cpuset/mems /dev/cpuset/top-app/mems
     # Support legacy paths
     symlink /sdcard /storage/sdcard0
     symlink /storage/usbdisk /mnt/usbdisk
@@ -32,7 +55,24 @@ on init
     symlink /dev/block/platform/13540000.dwmmc0/by-name/PERSISTENT /dev/block/persistent
 
 on post-fs-data
-#    mkdir /data/media 0770 media_rw media_rw
+    mkdir /data/media 0770 media_rw media_rw encryption=None
+
+    # GPS data directories - must be in post-fs-data for encryption policy
+    mkdir /data/system 0771 system system encryption=None
+    chown system system /data/system
+    mkdir /data/vendor/gps 0771 system system encryption=None
+    symlink /data/vendor/gps /data/system/gps
+    symlink /data/vendor/gps /data/gps
+    chown system system /data/system/gps
+    
+    # WiFi data directories and legacy symlinks
+    mkdir /data/vendor/wifi 0771 wifi system
+    symlink /data/vendor/wifi/.cid.info /data/.cid.info
+    symlink /data/vendor/wifi/.wifiver.info /data/misc/conn/.wifiver.info
+    rm /data/system/gps/gps_started
+    rm /data/system/gps/glonass_started
+    rm /data/system/gps/smd_started
+    rm /data/system/gps/sv_cno.info
 
     setprop vold.post_fs_data_done 1
 
@@ -55,19 +95,28 @@ on post-fs-data
     chmod 0664 /sys/class/voice_trigger/dbd2/reboot
     chown system audio /sys/class/voice_trigger/dbd2/va_load_amodel
     chmod 0664 /sys/class/voice_trigger/dbd2/va_load_amodel
-    mkdir /data/firmware 0770 audioserver system
+    mkdir /data/firmware 0770 audioserver system encryption=None
     chown audioserver system /data/firmware
 
 on boot
     # Allow to access debugfs
     chmod 755 /sys/kernel/debug
 
-    # Reset mDNIe scenario
+    # Reset mDNIe mode & scenario
     write /sys/class/mdnie/mdnie/scenario 0
+    write /sys/class/mdnie/mdnie/mode 0
 
     # Set up kernel tracing, but disable it by default
     chmod 0222 /sys/kernel/debug/tracing/trace_marker
     write /sys/kernel/debug/tracing/tracing_on 0
+
+    # Change permission for GPU
+    chown system system /sys/devices/11400000.mali/power_policy
+    chmod 0664 /sys/devices/11400000.mali/power_policy
+
+    # Change permission for touch key enabled
+    chown system system /sys/class/input/input8/enabled
+    chmod 0664 /sys/class/input/input8/enabled
 
     # Dynamic cluster hotplug
     chown system system /sys/devices/system/cpu/clusterhotplug/force_hstate
@@ -124,6 +173,32 @@ on boot
     chown system system /sys/devices/system/cpu/cpu0/cpufreq/interactive/freq_min
     chmod 0660 /sys/devices/system/cpu/cpu0/cpufreq/interactive/freq_min
 
+    # Change permission for dvfshelper
+    chown radio system /sys/devices/11400000.mali/dvfs_table
+    chown radio system /sys/devices/11400000.mali/dvfs_min_lock
+    chown radio system /sys/devices/11400000.mali/dvfs_max_lock
+    chown radio system /sys/devices/11400000.mali/highspeed_clock
+    chown radio system /sys/devices/11400000.mali/highspeed_load
+    chmod 0664 /sys/devices/11400000.mali/dvfs_table
+    chmod 0664 /sys/devices/11400000.mali/dvfs_min_lock
+    chmod 0664 /sys/devices/11400000.mali/dvfs_max_lock
+    chmod 0664 /sys/devices/11400000.mali/highspeed_clock
+    chmod 0664 /sys/devices/11400000.mali/highspeed_load
+
+    chown radio system /sys/class/devfreq/17000020.bus_mif/available_frequencies
+    chown radio system /sys/class/devfreq/17000020.bus_mif/min_freq
+    chown radio system /sys/class/devfreq/17000020.bus_mif/max_freq
+    chmod 0664 /sys/class/devfreq/17000020.bus_mif/available_frequencies
+    chmod 0664 /sys/class/devfreq/17000020.bus_mif/min_freq
+    chmod 0664 /sys/class/devfreq/17000020.bus_mif/max_freq
+
+    chown radio system /sys/class/devfreq/17000010.bus_int/available_frequencies
+    chown radio system /sys/class/devfreq/17000010.bus_int/min_freq
+    chown radio system /sys/class/devfreq/17000010.bus_int/max_freq
+    chmod 0664 /sys/class/devfreq/17000010.bus_int/available_frequencies
+    chmod 0664 /sys/class/devfreq/17000010.bus_int/min_freq
+    chmod 0664 /sys/class/devfreq/17000010.bus_int/max_freq
+
     # change permissions for all cpusets we touch at runtime
     chown system system /dev/cpuset/cpus
     chown system system /dev/cpuset/foreground/cpus
@@ -169,7 +244,7 @@ on boot
 
 # permissions for bluetooth.
     setprop ro.bt.bdaddr_path "/efs/bluetooth/bt_addr"
-    chown bluetooth bluetooth ro.bt.bdaddr_path
+
     chown radio bluetooth /efs/bluetooth/bt_addr
     chmod 0640 /efs/bluetooth/bt_addr
     chmod 0660 /sys/class/rfkill/rfkill0/state
@@ -212,6 +287,28 @@ on boot
 # IMEI folder
     mkdir /efs/imei 0775 radio system
 
+    # DRK permission
+    mkdir /efs/prov 0770 radio system
+    mkdir /efs/prov_data 0770 radio system
+    chown radio system /efs/prov_data/dev_root
+    chmod 0770 /efs/prov_data/dev_root
+    chown radio system /efs/prov_data/knox
+    chmod 0770 /efs/prov_data/knox
+    chown radio system /efs/prov_data/dev_root/dev_root.dat
+    chmod 0640 /efs/prov_data/dev_root/dev_root.dat
+    chown radio system /efs/prov/libdevkm.lock
+    chmod 0660 /efs/prov/libdevkm.lock
+    write /efs/prov/ffffffff00000000000000000000000c.tlbin 0
+    chown radio system /efs/prov/ffffffff00000000000000000000000c.tlbin
+    chmod 0660 /efs/prov/ffffffff00000000000000000000000c.tlbin
+
+    # CS socket
+    mkdir /dev/socket/cs_socket 0770 system system
+
+    # Switch Device
+    chown system radio /sys/class/sec/switch/usb_state
+    chown system radio /sys/class/sec/switch/chg_type
+
 #for datarouter
     chown system system /dev/dun
     chown system system /dev/ttyGS0
@@ -223,17 +320,24 @@ on boot
     chown system system /dev/tdmb
     chmod 0660 /dev/tdmb
 
+# OTG_TEST
+    chown system radio /sys/class/sec/switch/otg_test
+    chown system radio /sys/class/host_notify/usb_otg/booster
+    chmod 0660 /sys/class/host_notify/usb_otg/booster
+
 # IPSec for VOLTE
     chown root system /dev/socket
     chmod 0775 /dev/socket
 
 on fs
-    mount_all /fstab.samsungexynos7580
+    mount_all /vendor/etc/fstab.samsungexynos7580
     setprop ro.crypto.fuse_sdcard true
 
-    # Enable swap
-    swapon_all /fstab.samsungexynos7580
-    write /proc/sys/vm/swappiness 100
+    # Set LZ4 compression before swap is initialized
+    write /sys/block/zram0/comp_algorithm lz4
+    
+    # Initialize ZRAM using the size and streams defined in fstab
+    swapon_all /vendor/etc/fstab.samsungexynos7580
 
 # Permissions for ION
     chmod 0660 /sys/class/ion_cma/ion_video_ext/isolated
@@ -261,6 +365,19 @@ on fs
     chmod 0660 /sys/class/mdnie/mdnie/lux
     chown system system /sys/class/mdnie/mdnie/lux
 
+#For Absolute Persistence Partition
+    mkdir /persdata 0755 system system
+    mkdir /persdata/absolute 0750 system system
+
+    wait /dev/block/platform/13540000.dwmmc0/by-name/PERSDATA
+    exec /system/bin/e2fsck -p /dev/block/platform/13540000.dwmmc0/by-name/PERSDATA
+    mount ext4 /dev/block/platform/13540000.dwmmc0/by-name/PERSDATA /persdata/absolute nosuid nodev barrier=1
+
+    chown system system /persdata
+    chmod 0755 /persdata
+    chown system system /persdata/absolute
+    chmod 0750 /persdata/absolute
+
 # Permissions for TouchScreen
     chown system radio /sys/class/sec/tsp/cmd
     chown system system /sys/class/sec/tsp/input/enabled
@@ -282,22 +399,11 @@ on fs
 # Fingerprint
     mkdir /dev/validity 0770 system system
 
-# GnssConfiguration doesn't actually look at gps.conf, just the debug file
-    mount none /system/etc/gps.conf /system/etc/gps_debug.conf bind
-
- # create data/gps for GPS daemon
+ # GPS daemon device permissions (data dirs moved to post-fs-data)
     chown root system /dev/ttySAC0
     chmod 0660 /dev/ttySAC0
     chown root system /sys/class/sec/gps/GPS_PWR_EN/value
     chmod 0664 /sys/class/sec/gps/GPS_PWR_EN/value
-    mkdir /data/system 0771 system system
-    chown system system /data/system
-    mkdir /data/system/gps 0771 system system
-    chown system system /data/system/gps
-    rm /data/system/gps/gps_started
-    rm /data/system/gps/glonass_started
-    rm /data/system/gps/smd_started
-    rm /data/system/gps/sv_cno.info
 
 # MTP permission
     chmod 0660 /dev/usb_mtp_gadget
@@ -359,7 +465,6 @@ on fs
     chown system radio /sys/class/sensors/proximity_sensor/raw_data
     chown system radio /sys/class/sensors/proximity_sensor/prox_avg
     chown system radio /sys/class/sensors/proximity_sensor/prox_cal
-    chown system radio /sys/class/sensors/proximity_sensor/prox_thresh
     chown system radio /sys/class/sensors/proximity_sensor/vendor
     chown system radio /sys/class/sensors/proximity_sensor/name
     chown system radio /sys/class/sensors/proximity_sensor/thresh_high
@@ -427,6 +532,9 @@ on fs
     chown system radio /sys/class/sensors/hrmled_sensor/name
     chown system radio /sys/class/sensors/hrmled_sensor/vendor
     chown system radio /sys/class/sensors/hrmled_sensor/hrmled_flush
+
+ # Meta_sensor
+    chown system radio /sys/class/sensors/sensor_dev/flush
 
 # UV_sensor
     chown system radio /sys/class/sensors/uv_sensor/name
@@ -790,11 +898,14 @@ service gpsd /vendor/bin/gpsd -c /system/etc/gps.xml
     user gps
     group system wakelock inet net_raw
     ioprio be 0
+    seclabel u:r:gpsd:s0
 
 # Set watchdog timer to 30 seconds and pet it every 10 seconds to get a 20 second margin
 service watchdogd /sbin/watchdogd 10 20
     class core
     disabled
+    user root
+    seclabel u:r:watchdogd:s0
 
 # on userdebug and eng builds, enable kgdb on the serial console
 on property:ro.debuggable=1
@@ -805,15 +916,26 @@ on property:ro.debuggable=1
 on property:ro.debug_level=0x4f4c
     start watchdogd
 
-# LPM
-service charger /system/bin/charger
-    class charger
-    critical
-    seclabel u:r:charger:s0
+# rerun macloader to fix wifi after hotspot
+on property:wlan.driver.status=unloaded
+    start macloader
 
-on charger
-    # Set cpu governor to powersave while in charging mode
-    write /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor powersave
-    write /sys/devices/system/cpu/cpu1/cpufreq/scaling_governor powersave
-    write /sys/devices/system/cpu/cpu2/cpufreq/scaling_governor powersave
-    write /sys/devices/system/cpu/cpu3/cpufreq/scaling_governor powersave
+# DRK/CS service
+service cs_service /system/bin/cs
+    class main
+    user system
+    group system
+    disabled
+
+on property:vendor.sys.mobicoredaemon.enable=true
+    start cs_service
+    write /proc/iccc_ready 1
+
+# sswap (Samsung proprietary NAND-backed swap) is disabled - using zram instead
+service sswap /vendor/bin/sswap -s -f 1024
+      class core
+      disabled
+      user root
+      group root
+      oneshot
+      seclabel u:r:sswap:s0

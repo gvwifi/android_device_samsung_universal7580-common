@@ -14,7 +14,7 @@ allow kernel { app_efs_file battery_efs_file efs_file sensor_efs_file }:file rw_
 r_dir_file(kernel, wifi_efs_file);
 
 # /data/misc/conn/.wifiver.info
-allow kernel wifi_data_file:file rw_file_perms;
+#allow kernel wifi_vendor_data_file:file rw_file_perms;
 
 # Allow kernel to search tmpfs
 allow kernel tmpfs:dir search;

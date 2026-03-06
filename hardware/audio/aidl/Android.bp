@@ -1,0 +1,89 @@
+package {
+    default_applicable_licenses: ["Android-Apache-2.0"],
+}
+
+cc_binary {
+    name: "android.hardware.audio.service.universal7580",
+    relative_install_path: "hw",
+    init_rc: ["android.hardware.audio.service.universal7580.rc"],
+    vintf_fragments: ["android.hardware.audio.service.universal7580.xml"],
+    vendor: true,
+    cflags: [
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-Wno-unused-parameter",
+    ],
+    srcs: [
+        "service.cpp",
+        "Config.cpp",
+        "Module.cpp",
+        "StreamOut.cpp",
+        "StreamIn.cpp",
+        "StreamCommon.cpp",
+    ],
+    defaults: [
+        "latest_android_hardware_audio_core_ndk_shared",
+        "latest_android_hardware_audio_common_ndk_shared",
+        "latest_android_hardware_audio_effect_ndk_shared",
+        "latest_android_media_audio_common_types_ndk_shared",
+    ],
+    shared_libs: [
+        "libbase",
+        "liblog",
+        "libcutils",
+        "libutils",
+        "libbinder_ndk",
+        "libhardware",
+        "android.hardware.common-V2-ndk",
+        "android.hardware.common.fmq-V1-ndk",
+        "libfmq",
+    ],
+    header_libs: [
+        "libaudio_system_headers",
+    ],
+}
+
+cc_binary {
+    name: "android.hardware.audio.effect.service.universal7580",
+    relative_install_path: "hw",
+    init_rc: ["android.hardware.audio.effect.service.universal7580.rc"],
+    vintf_fragments: ["android.hardware.audio.effect.service.universal7580.xml"],
+    vendor: true,
+    cflags: [
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-Wno-unused-parameter",
+        // Thread-safety analysis annotations from AOSP headers
+        "-Wno-thread-safety-analysis",
+        "-DBACKEND_NDK",
+    ],
+    srcs: [
+        "service_effect.cpp",
+        "EffectFactory.cpp",
+    ],
+    defaults: [
+        "latest_android_hardware_audio_effect_ndk_shared",
+        "latest_android_media_audio_common_types_ndk_shared",
+    ],
+    header_libs: [
+        "libaudioaidl_headers",
+        "libaudio_system_headers",
+    ],
+    shared_libs: [
+        "libbase",
+        "liblog",
+        "libutils",
+        "libcutils",
+        "libbinder_ndk",
+        "libdl",
+        "libeffectconfig",
+        "libaudioaidlcommon",
+        "libaudioutils",
+        "libaudio_aidl_conversion_common_ndk",
+        "libfmq",
+        "android.hardware.common-V2-ndk",
+        "android.hardware.common.fmq-V1-ndk",
+    ],
+}

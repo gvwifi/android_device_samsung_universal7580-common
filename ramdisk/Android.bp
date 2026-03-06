@@ -1,0 +1,61 @@
+prebuilt_etc {
+    name: "fstab.samsungexynos7580",
+    src: "etc/fstab.samsungexynos7580",
+    vendor: true,
+}
+
+prebuilt_etc {
+    name: "init.baseband.rc",
+    src: "etc/init.baseband.rc",
+    sub_dir: "init/hw",
+    vendor: true,
+}
+
+prebuilt_etc {
+    name: "init.power.rc",
+    src: "etc/init.power.rc",
+    sub_dir: "init/hw",
+    vendor: true,
+}
+
+prebuilt_etc {
+    name: "init.wifi.rc",
+    src: "etc/init.wifi.rc",
+    sub_dir: "init/hw",
+    vendor: true,
+}
+
+prebuilt_etc {
+    name: "init.samsungexynos7580.usb.rc",
+    src: "etc/init.samsungexynos7580.usb.rc",
+    sub_dir: "init/hw",
+    vendor: true,
+}
+
+prebuilt_etc {
+    name: "init.samsungexynos7580.rc",
+    src: "etc/init.samsungexynos7580.rc",
+    sub_dir: "init/hw",
+    vendor: true,
+}
+
+prebuilt_etc {
+    name: "init.samsung.rc",
+    src: "etc/init.samsung.rc",
+    sub_dir: "init/hw",
+    vendor: true,
+}
+
+prebuilt_etc {
+    name: "ueventd.samsungexynos7580.rc",
+    filename: "ueventd.rc",
+    src: "etc/ueventd.samsungexynos7580.rc",
+    vendor: true,
+}
+
+prebuilt_etc {
+    name: "init.recovery.samsungexynos7580.rc",
+    src: "etc/init.recovery.samsungexynos7580.rc",
+    sub_dir: "init",
+    recovery: true,
+}

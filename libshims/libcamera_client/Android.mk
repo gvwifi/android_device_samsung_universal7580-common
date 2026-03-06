@@ -16,11 +16,14 @@
 LOCAL_PATH := $(call my-dir)
 
 include $(CLEAR_VARS)
-LOCAL_SRC_FILES := CameraParameters.cpp
+LOCAL_SRC_FILES := CameraParameters.cpp CameraMetadata.cpp
 
 LOCAL_MODULE := libcamera_client_shim
 LOCAL_MODULE_TAGS := optional
 LOCAL_MODULE_CLASS := SHARED_LIBRARIES
 LOCAL_PROPRIETARY_MODULE := true
+
+LOCAL_SHARED_LIBRARIES := libcamera_metadata liblog
+LOCAL_C_INCLUDES := system/media/camera/include
 
 include $(BUILD_SHARED_LIBRARY)

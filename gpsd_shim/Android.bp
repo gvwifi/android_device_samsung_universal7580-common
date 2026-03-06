@@ -1,0 +1,36 @@
+//
+// Copyright (C) 2026 The LineageOS Project
+//
+// SPDX-License-Identifier: Apache-2.0
+//
+
+cc_library_shared {
+    name: "libshim_gpsd",
+    srcs: ["libshim_gpsd.cpp"],
+    shared_libs: [
+        "liblog",
+    ],
+    vendor: true,
+}
+
+cc_prebuilt_binary {
+    name: "gpsd",
+    srcs: ["gpsd"],
+    vendor: true,
+    strip: {
+        none: true,
+    },
+    check_elf_files: false,
+    // The patched binary will be here, no need to touch shared_libs since we manipulated ELF directly.
+}
+
+cc_prebuilt_library_shared {
+    name: "libwrappergps",
+    srcs: ["libwrappergps.so"],
+    vendor: true,
+    strip: {
+        none: true,
+    },
+    check_elf_files: false,
+    // The patched library will be here.
+}

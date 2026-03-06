@@ -18,53 +18,60 @@ LOCAL_PATH := device/samsung/universal7580-common
 
 DEVICE_PACKAGE_OVERLAYS += $(LOCAL_PATH)/overlay
 
-# Audio
+# Samsung Packages
+PRODUCT_HOST_PACKAGES += \
+    dtbhtoolExynos \
+    mkdtbhbootimg
+
+# Audio — AIDL HAL (android.hardware.audio.core v3)
 PRODUCT_PACKAGES += \
-    audio.primary.universal7580 \
-    audio.a2dp.default \
     audio.r_submix.default \
     audio.usb.default \
     tinymix \
-    android.hardware.audio@2.0-impl \
-    android.hardware.audio.effect@2.0-impl
+    audio.primary.universal7580 \
+    android.hardware.audio.service.universal7580 \
+    android.hardware.audio.effect.service.universal7580 \
+    libbundleaidl \
+    libreverbaidl \
+    libvisualizeraidl \
+    libdownmixaidl \
+    libdynamicsprocessingaidl \
+    libloudnessenhanceraidl \
+    libpreprocessingaidl
 
 PRODUCT_COPY_FILES += \
-    $(LOCAL_PATH)/configs/audio/audio_policy.conf:$(TARGET_COPY_OUT_SYSTEM)/etc/audio_policy.conf \
     frameworks/av/services/audiopolicy/config/audio_policy_volumes.xml:$(TARGET_COPY_OUT_VENDOR)/etc/audio_policy_volumes.xml \
     frameworks/av/services/audiopolicy/config/a2dp_audio_policy_configuration.xml:$(TARGET_COPY_OUT_VENDOR)/etc/a2dp_audio_policy_configuration.xml \
     frameworks/av/services/audiopolicy/config/default_volume_tables.xml:$(TARGET_COPY_OUT_VENDOR)/etc/default_volume_tables.xml \
     frameworks/av/services/audiopolicy/config/r_submix_audio_policy_configuration.xml:$(TARGET_COPY_OUT_VENDOR)/etc/r_submix_audio_policy_configuration.xml \
     frameworks/av/services/audiopolicy/config/usb_audio_policy_configuration.xml:$(TARGET_COPY_OUT_VENDOR)/etc/usb_audio_policy_configuration.xml \
-    $(LOCAL_PATH)/configs/audio/audio_policy_configuration.xml:$(TARGET_COPY_OUT_VENDOR)/etc/audio_policy_configuration.xml
+    device/samsung/universal7580-common/configs/audio/audio_policy_configuration.xml:$(TARGET_COPY_OUT_VENDOR)/etc/audio_policy_configuration.xml \
+    frameworks/av/services/audiopolicy/enginedefault/config/example/phone/audio_policy_engine_configuration.xml:$(TARGET_COPY_OUT_VENDOR)/etc/audio_policy_engine_configuration.xml \
+    frameworks/av/services/audiopolicy/enginedefault/config/example/phone/audio_policy_engine_product_strategies.xml:$(TARGET_COPY_OUT_VENDOR)/etc/audio_policy_engine_product_strategies.xml \
+    frameworks/av/services/audiopolicy/enginedefault/config/example/phone/audio_policy_engine_stream_volumes.xml:$(TARGET_COPY_OUT_VENDOR)/etc/audio_policy_engine_stream_volumes.xml \
+    frameworks/av/services/audiopolicy/enginedefault/config/example/phone/audio_policy_engine_default_stream_volumes.xml:$(TARGET_COPY_OUT_VENDOR)/etc/audio_policy_engine_default_stream_volumes.xml
 
 # Bluetooth
 PRODUCT_PACKAGES += \
-    android.hardware.bluetooth@1.0-impl.7580 \
-    libbt-vendor
+    android.hardware.bluetooth@1.0-impl.7580
 
 # Camera
 PRODUCT_PACKAGES += \
-    android.hardware.camera.provider@2.4-impl-legacy \
+    android.hardware.camera.provider@2.4-impl \
     android.hardware.camera.provider@2.4-service
-
-# Configstore
-PRODUCT_PACKAGES += \
-    android.hardware.configstore@1.0-impl \
-    android.hardware.configstore@1.0-service
 
 # DRM
 PRODUCT_PACKAGES += \
     android.hardware.drm@1.0-impl \
     android.hardware.drm@1.0-service \
-    android.hardware.drm@1.3-service.clearkey
-
-# Flat device tree for boot image
-PRODUCT_HOST_PACKAGES += \
-    dtbhtoolExynos
+    android.hardware.drm-service.clearkey
 
 # GPS
 PRODUCT_PACKAGES += \
-    android.hardware.gnss@1.0-impl
+    android.hardware.gnss@1.0-impl \
+    gpsd \
+    libshim_gpsd \
+    libwrappergps
 
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/configs/gps/gps.conf:system/etc/gps.conf \
@@ -82,8 +89,9 @@ PRODUCT_PACKAGES += \
 
 # Health
 PRODUCT_PACKAGES += \
-    android.hardware.health@2.0-impl \
-    android.hardware.health@2.0-service
+    android.hardware.health-service.universal7580 \
+    android.hardware.health-service.universal7580_recovery \
+    charger_res_images
 
 # Gatekeeper
 PRODUCT_PACKAGES += \
@@ -91,26 +99,37 @@ PRODUCT_PACKAGES += \
 
 # Keymaster
 PRODUCT_PACKAGES += \
-    keystore.exynos5 \
+    keystore.exynos7580 \
     android.hardware.keymaster@3.0-impl \
     android.hardware.keymaster@3.0-service
 
 # Lights
 PRODUCT_PACKAGES += \
-    android.hardware.light@2.0-service.samsung
+    lights.universal7580 \
+    android.hardware.light@2.0-impl \
+    android.hardware.light@2.0-service
 
 # Media
+PRODUCT_PACKAGES += \
+    android.hardware.media.omx@1.0-service \
+    libstagefright_softomx_plugin.vendor \
+    libstagefright_softomx.vendor \
+    com.android.media.swcodec
+
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/configs/media/media_codecs.xml:$(TARGET_COPY_OUT_VENDOR)/etc/media_codecs.xml \
     $(LOCAL_PATH)/configs/media/media_codecs_performance.xml:$(TARGET_COPY_OUT_VENDOR)/etc/media_codecs_performance.xml \
     $(LOCAL_PATH)/configs/media/media_profiles_V1_0.xml:$(TARGET_COPY_OUT_VENDOR)/etc/media_profiles_V1_0.xml \
-    frameworks/av/media/libstagefright/data/media_codecs_google_audio.xml:$(TARGET_COPY_OUT_VENDOR)/etc/media_codecs_google_audio.xml \
-    frameworks/av/media/libstagefright/data/media_codecs_google_telephony.xml:$(TARGET_COPY_OUT_VENDOR)/etc/media_codecs_google_telephony.xml \
-    frameworks/av/media/libstagefright/data/media_codecs_google_video.xml:$(TARGET_COPY_OUT_VENDOR)/etc/media_codecs_google_video_le.xml
+    frameworks/av/media/libstagefright/data/media_codecs_google_video.xml:$(TARGET_COPY_OUT_VENDOR)/etc/media_codecs_google_video_le.xml \
+    frameworks/av/media/libstagefright/data/media_codecs_google_audio.xml:$(TARGET_COPY_OUT_VENDOR)/etc/media_codecs_google_audio.xml
 
 # Memory
 PRODUCT_PACKAGES += \
     android.hardware.memtrack@1.0-impl
+
+# Cgroup configuration (v1 memory cgroup for lmkd)
+PRODUCT_COPY_FILES += \
+    $(LOCAL_PATH)/cgroups.json:$(TARGET_COPY_OUT_VENDOR)/etc/cgroups.json
 
 # Mobicore
 PRODUCT_PACKAGES += \
@@ -119,8 +138,11 @@ PRODUCT_PACKAGES += \
     libMcRegistry
 
 # Power
+# Device-specific minimal HIDL 1.0 power HAL.
+# CPU governor tuning is handled by init.power.rc via sysfs.
 PRODUCT_PACKAGES += \
-    android.hardware.power@1.0-service.exynos
+    android.hardware.power@1.0-service.universal7580
+
 
 # Permissions
 PRODUCT_COPY_FILES += \
@@ -144,13 +166,12 @@ PRODUCT_PACKAGES += \
     init.wifi.rc \
     ueventd.samsungexynos7580.rc
 
+PRODUCT_COPY_FILES += \
+    device/samsung/universal7580-common/ramdisk/etc/fstab.samsungexynos7580:$(TARGET_COPY_OUT_RAMDISK)/fstab.samsungexynos7580
+
 # RenderScript
 PRODUCT_PACKAGES += \
     android.hardware.renderscript@1.0-impl
-
-# SamsungDoze
-PRODUCT_PACKAGES += \
-    SamsungDoze
 
 # SEC
 PRODUCT_PACKAGES += \
@@ -164,44 +185,25 @@ PRODUCT_COPY_FILES += \
 # Sensors
 PRODUCT_PACKAGES += \
     android.hardware.sensors@1.0-impl \
-    android.hardware.vibrator@1.0-impl \
-    android.hardware.vibrator@1.0-service
+    android.hardware.vibrator-service.universal7580
 
 # Shims
 PRODUCT_PACKAGES += \
-    libcamera_client_shim \
-    libexynoscamera_shim \
-    libstagefright_shim \
-    libui_shim \
-    libcutils_shim
-
-# TextClassifier
-PRODUCT_PACKAGES += \
-    textclassifier.bundle1
-
-# Touch features
-PRODUCT_PACKAGES += \
-    vendor.lineage.touch@1.0-service.samsung
-
-# Trust HAL
-PRODUCT_PACKAGES += \
-    vendor.lineage.trust@1.0-service
+    libcutils_shim_exynos7580
 
 # USB
 PRODUCT_PACKAGES += \
-    android.hardware.usb@1.0-service.basic
+    android.hardware.usb@1.0-service
 
 # Wifi
 PRODUCT_PACKAGES += \
-    wifiloader \
     hostapd \
-    wificond \
-    wifilogd \
-    wlutil \
     libwpa_client \
     wpa_supplicant \
     wpa_supplicant.conf \
-    android.hardware.wifi@1.0-service.legacy
+    android.hardware.wifi-service \
+    wifiloader \
+    macloader
 
 # Properties
 -include $(LOCAL_PATH)/system_prop.mk

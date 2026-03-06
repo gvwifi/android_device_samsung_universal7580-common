@@ -21,7 +21,8 @@ PRODUCT_PROPERTY_OVERRIDES += \
 
 # Display
 PRODUCT_PROPERTY_OVERRIDES += \
-    ro.opengles.version=196610
+    ro.opengles.version=196610 \
+    ro.hardware.egl=mali
 
 # HWC
 PRODUCT_PROPERTY_OVERRIDES += \
@@ -35,7 +36,7 @@ PRODUCT_PROPERTY_OVERRIDES += \
 
 # Media
 PRODUCT_PROPERTY_OVERRIDES += \
-    debug.stagefright.ccodec=0
+    debug.stagefright.ccodec=1
 
 # Factory Reset Protection
 PRODUCT_PROPERTY_OVERRIDES += \
@@ -45,3 +46,8 @@ PRODUCT_PROPERTY_OVERRIDES += \
 # Define default initial receive window size in segments.
 PRODUCT_PROPERTY_OVERRIDES += \
     net.tcp.default_init_rwnd=60
+
+# Charger
+PRODUCT_PROPERTY_OVERRIDES += \
+    ro.charger.backlight.path=/sys/class/backlight/panel/brightness \
+    ro.charger.enable_suspend=true

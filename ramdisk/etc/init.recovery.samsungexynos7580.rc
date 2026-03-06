@@ -1,11 +1,7 @@
-on fs
-    setprop sys.usb.ffs.aio_compat 1
+on init
+    setprop sys.usb.configfs 1
+    # Set controller for configfs
+    setprop sys.usb.controller 13580000.usb
 
-    wait /dev/block/platform/13540000.dwmmc0
-    symlink /dev/block/platform/13540000.dwmmc0 /dev/block/bootdevice
-    symlink /dev/block/platform/13540000.dwmmc0/by-name/SYSTEM /dev/block/platform/13540000.dwmmc0/by-name/system
-
-on post-fs-data
-    # avoid USB crash
-    setprop persist.adb.nonblocking_ffs 0
-    setprop ro.adb.nonblocking_ffs 0
+on property:sys.usb.config=sideload && property:sys.usb.configfs=1
+    stop adbd

@@ -1,0 +1,8 @@
+service vendor.audio-hal-aidl /vendor/bin/hw/android.hardware.audio.service.universal7580
+    class hal
+    interface aidl android.hardware.audio.core.IModule/default
+    interface aidl android.hardware.audio.core.IConfig/default
+    user audioserver
+    group audio camera drmrpc inet media mediadrm net_bt net_bt_admin net_bw_stats wakelock
+    capabilities BLOCK_SUSPEND
+    onrestart restart audioserver

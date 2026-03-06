@@ -1,0 +1,31 @@
+cc_library_static {
+    name: "libdtbimg",
+    srcs: ["dtbimg.c"],
+    export_include_dirs: ["libdtbimg"],
+    static_libs: ["libfdt"],
+    host_supported: true,
+}
+
+cc_binary_host {
+    name: "mkdtbhbootimg",
+    srcs: ["mkbootimg.c"],
+    static_libs: ["libdtbimg", "libfdt"],
+    shared_libs: ["libcrypto"],
+}
+
+cc_binary_host {
+    name: "unpackdtbhbootimg",
+    srcs: ["unpackbootimg.c"],
+}
+
+cc_binary_host {
+    name: "dtbhtoolExynos",
+    srcs: ["mkdtbimg.c"],
+    static_libs: ["libdtbimg", "libfdt"],
+}
+
+cc_binary_host {
+    name: "unpackdtbhimg",
+    srcs: ["unpackdtbhimg.c"],
+}
+

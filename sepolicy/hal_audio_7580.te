@@ -1,0 +1,30 @@
+# SELinux policy for the Exynos 7580 AIDL Audio HAL service.
+#
+# The base domain is hal_audio_default (defined in system/sepolicy) which already grants:
+#   - access to audio_device (/dev/snd/*)
+#   - binder IPC with audioserver
+#   - /proc/asound access
+# We only need device-specific additions here.
+
+# Allow the audio HAL to connect to Samsung RILD via its abstract socket.
+# libsecril-client uses ANDROID_SOCKET_NAMESPACE_ABSTRACT sockets:
+#   "Multiclient", "Multiclient2", "VND_Multiclient" (non-DSDS),
+#   "QMulticlient" (DSDS variant).
+allow hal_audio_default rild:unix_stream_socket connectto;
+allow hal_audio_default rild_socket:sock_file write;
+
+# Allow using the mif (modem interface) device nodes for voice call path.
+allow hal_audio_default mif_device:chr_file rw_file_perms;
+
+# Allow access to PCM/compress devices beyond what stock policy grants
+# (some boards expose compress nodes that are not labelled audio_device).
+allow hal_audio_default audio_device:chr_file rw_file_perms;
+
+# Allow reading alsa control nodes (used by libaudioroute / tinymix).
+allow hal_audio_default audio_device:dir r_dir_perms;
+
+# Allow the service to set process priority / scheduling.
+allow hal_audio_default self:global_capability_class_set sys_nice;
+
+# Allow reading default properties (required by some libraries)
+get_prop(hal_audio_default, default_prop)

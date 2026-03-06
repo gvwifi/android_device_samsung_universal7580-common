@@ -1,5 +1,5 @@
 # Mount debugfs on /sys/kernel/debug.
-allow init debugfs:dir mounton;
+#allow init debugfs:dir mounton;
 
 # Mount EFS on /efs
 allow init efs_file:dir  mounton;
@@ -71,7 +71,7 @@ allow init sysfs_block:file rw_file_perms;
 # Audio Jack
 allow init sysfs_jack:file setattr;
 
-unix_socket_connect(init, property, rild)
+#unix_socket_connect(init, property, rild)
 
 # Allow access to /proc/device-tree nodes
 r_dir_file(init, proc_dt_firmware)

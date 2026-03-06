@@ -1,0 +1,19 @@
+cc_library_shared {
+    name: "libsecril-client",
+    vendor: true,
+    srcs: ["secril-client.cpp"],
+    shared_libs: [
+        "libutils",
+        "libbinder",
+        "libcutils",
+        "libhardware_legacy",
+        "liblog",
+    ],
+    header_libs: ["ril_headers_7580"],
+    export_header_lib_headers: ["ril_headers_7580"],
+    cflags: [
+        "-Wno-unused-parameter",
+        "-DSAMSUNG_NEXT_GEN_MODEM",
+    ],
+    export_include_dirs: ["."],
+}

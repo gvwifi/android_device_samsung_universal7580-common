@@ -1,0 +1,15 @@
+service vendor.health-default /system/bin/hw/android.hardware.health-service.universal7580_recovery
+    class hal
+    user root
+    group system
+    capabilities WAKE_ALARM BLOCK_SUSPEND
+    file /dev/kmsg w
+    seclabel u:r:recovery:s0
+
+service vendor.charger /system/bin/hw/android.hardware.health-service.universal7580_recovery --charger
+    class charger
+    user root
+    group system
+    capabilities SYS_BOOT
+    file /dev/kmsg w
+    seclabel u:r:recovery:s0

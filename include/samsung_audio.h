@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#include <telephony/ril.h>
+#include "telephony/ril.h"
 
 #ifndef SAMSUNG_AUDIO_H
 #define SAMSUNG_AUDIO_H

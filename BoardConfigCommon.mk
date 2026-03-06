@@ -46,35 +46,43 @@ TARGET_CPU_VARIANT := cortex-a53
 
 # Kernel
 TARGET_KERNEL_ADDITIONAL_FLAGS := \
-    HOSTCFLAGS="-fuse-ld=lld -Wno-unused-command-line-argument"
+    HOSTCFLAGS="-Wno-unused-command-line-argument"
 
 # Audio
 USE_XML_AUDIO_POLICY_CONF := 1
 
-# Binder
-TARGET_USES_64_BIT_BINDER := true
-
 # Extracted with libbootimg
 BOARD_CUSTOM_BOOTIMG := true
-BOARD_CUSTOM_BOOTIMG_MK := hardware/samsung/mkbootimg.mk
+BOARD_CUSTOM_BOOTIMG_MK := $(LOCAL_PATH)/tools/mkbootimg.mk
 BOARD_MKBOOTIMG_ARGS := --kernel_offset 0x00008000 --ramdisk_offset 0x01000000 --tags_offset 0x00000100
+BOARD_MKBOOTIMG_ARGS += --kernel $(PRODUCT_OUT)/kernel
+BOARD_MKBOOTIMG_ARGS += --dt $(PRODUCT_OUT)/dt.img
+BOOTIMAGE_EXTRA_DEPS += $(PRODUCT_OUT)/dt.img
 BOARD_KERNEL_BASE := 0x10000000
 BOARD_KERNEL_PAGESIZE := 2048
 BOARD_KERNEL_IMAGE_NAME := Image
 #BOARD_KERNEL_CMDLINE := The bootloader ignores the cmdline from the boot.img
 BOARD_KERNEL_SEPARATED_DT := true
 TARGET_CUSTOM_DTBTOOL := dtbhtoolExynos
-BOARD_ROOT_EXTRA_FOLDERS += efs cpefs
+BOARD_ROOT_EXTRA_FOLDERS := efs persdata cpefs
 TARGET_FS_CONFIG_GEN := $(LOCAL_PATH)/config.fs
 
 # Kernel
-TARGET_KERNEL_ARCH := arm64
-TARGET_KERNEL_CROSS_COMPILE_PREFIX := aarch64-linux-android-
-KERNEL_TOOLCHAIN := $(BUILD_TOP)/prebuilts/gcc/$(HOST_OS)-x86/aarch64/aarch64-linux-android-4.9/bin
-TARGET_LINUX_KERNEL_VERSION := 3.10
-
-# Kernel config
 TARGET_KERNEL_SOURCE := kernel/samsung/universal7580
+TARGET_KERNEL_ARCH := arm64
+TARGET_LINUX_KERNEL_VERSION := 3.10
+TARGET_KERNEL_CLANG_COMPILE := false
+TARGET_KERNEL_LLVM_BINUTILS := false
+#KERNEL_CC := CC="clang"
+
+#ifneq (,$(filter aarch64 arm64,$(shell uname -m)))
+#    $(warning Using native aarch64 kernel toolchain...)
+#    KERNEL_TOOLCHAIN := $(abspath prebuilts/gcc/linux-aarch64/aarch64/aarch64-linux-gnu-4.9/bin)
+#    TARGET_KERNEL_CROSS_COMPILE_PREFIX := aarch64-linux-gnu-
+#else
+#    KERNEL_TOOLCHAIN := $(abspath prebuilts/gcc/linux-x86/aarch64/aarch64-linux-android-4.9/bin)
+#    TARGET_KERNEL_CROSS_COMPILE_PREFIX := aarch64-linux-android-
+#endif
 
 # Use these flags if the board has a ext4 partition larger than 2gb
 BOARD_HAS_LARGE_FILESYSTEM := true
@@ -119,7 +127,6 @@ BOARD_USE_SINGLE_PLANE_IN_DRM := false
 
 # HWComposer
 BOARD_USES_VPP := true
-#BOARD_USES_VPP_V2 := true // 8890 only
 BOARD_HDMI_INCAPABLE := true
 
 # Scalar
@@ -168,7 +175,6 @@ WIFI_HIDL_UNIFIED_SUPPLICANT_SERVICE_RC_ENTRY := true
 BOARD_HAVE_SAMSUNG_WIFI          := true
 
 # Bluetooth
-BOARD_CUSTOM_BT_CONFIG := $(LOCAL_PATH)/bluetooth/libbt_vndcfg.txt
 BOARD_HAVE_BLUETOOTH := true
 BOARD_HAVE_BLUETOOTH_BCM := true
 BOARD_HAVE_SAMSUNG_BLUETOOTH := true
@@ -178,13 +184,22 @@ BACKLIGHT_PATH := "/sys/class/backlight/panel/brightness"
 
 # Recovery
 TARGET_RECOVERY_FSTAB := $(LOCAL_PATH)/ramdisk/etc/fstab.samsungexynos7580
+TARGET_NO_RECOVERY := false
+BOARD_HAS_DOWNLOAD_MODE := true
+
+# Ensure Non-A/B OTA
+AB_OTA_UPDATER := false
+BOARD_USES_METADATA_PARTITION := true
 
 # SELinux
+SELINUX_IGNORE_NEVERALLOWS := true
 BOARD_SEPOLICY_DIRS += device/samsung/universal7580-common/sepolicy 
 BOARD_SEPOLICY_VERS := $(PLATFORM_SDK_VERSION).0
 
 # Soong namespaces
-PRODUCT_SOONG_NAMESPACES += $(LOCAL_PATH)
+PRODUCT_SOONG_NAMESPACES += $(LOCAL_PATH) \
+    hardware/samsung \
+    hardware/samsung_slsi/exynos5
 
 # HIDL
 PRODUCT_ENFORCE_VINTF_MANIFEST_OVERRIDE := true
@@ -195,5 +210,5 @@ TARGET_HAS_MEMFD_BACKPORT := true
 # Shim
 TARGET_LD_SHIM_LIBS += \
     /system/bin/mediaserver|/system/lib/libstagefright_shim.so \
-    /system/lib/libsec-ril.so|/vendor/lib/libcutils_shim.so \
-    /system/lib/libsec-ril-dsds.so|/vendor/lib/libcutils_shim.so
+    /system/lib/libsec-ril.so|/vendor/lib/libcutils_shim_exynos7580.so \
+    /system/lib/libsec-ril-dsds.so|/vendor/lib/libcutils_shim_exynos7580.so

@@ -335,22 +335,34 @@ void VendorInterface::OnFirmwareConfigured(uint8_t result) {
     firmware_startup_timer_ = nullptr;
   }
 
-  if (initialize_complete_cb_ != nullptr) {
-    initialize_complete_cb_(result == 0);
-    initialize_complete_cb_ = nullptr;
-  }
-
-  lib_interface_->op(BT_VND_OP_SCO_CFG, nullptr);
+  // Do NOT call BT_VND_OP_SCO_CFG here.
+  // With BTHW_FW_EXTENDED_CONFIGURATION=TRUE the vendor lib already ran the
+  // full SCO init chain (0xFC7E -> 0xFC6D) before invoking fwcfg_cb.
+  // Calling it again here triggers a second SCO init AFTER the GD stack
+  // has already started, causing the 0xFC7E / 0xFC6D response to race with
+  // HCI_RESET and crash: "Waiting for RESET(0x0c03), got Unknown OpCode".
 
   lib_interface_->op(BT_VND_OP_GET_LPM_IDLE_TIMEOUT, &lpm_timeout_ms);
   ALOGI("%s: lpm_timeout_ms %d", __func__, lpm_timeout_ms);
 
+  // Enable LPM (sends 0xFC27 via transmit_cb). This must be dispatched
+  // BEFORE initialize_complete_cb_ so internal_command is set to {lpm_cb, 0xFC27}
+  // before the GD stack starts and sends HCI_RESET.
+  // When 0xFC27 response arrives it matches internal_command and is consumed
+  // by the vendor callback. RESET response arrives later with internal_command
+  // cleared, so it is correctly forwarded to the GD stack via event_cb_.
   bt_vendor_lpm_mode_t mode = BT_VND_LPM_ENABLE;
   lib_interface_->op(BT_VND_OP_LPM_SET_MODE, &mode);
 
   ALOGD("%s Calling StartLowPowerWatchdog()", __func__);
   fd_watcher_.ConfigureTimeout(std::chrono::milliseconds(lpm_timeout_ms),
                                [this]() { OnTimeout(); });
+
+  // Notify the GD stack only after all vendor async commands are in-flight.
+  if (initialize_complete_cb_ != nullptr) {
+    initialize_complete_cb_(result == 0);
+    initialize_complete_cb_ = nullptr;
+  }
 }
 
 void VendorInterface::OnTimeout() {

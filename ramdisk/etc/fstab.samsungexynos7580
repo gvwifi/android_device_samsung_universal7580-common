@@ -1,24 +1,33 @@
-# Android fstab file.
-# The filesystem that contains the filesystem checker binary (typically /system) cannot
-# specify MF_CHECK, and must come before any filesystems that do specify MF_CHECK
-# data partition must be located at the bottom for supporting device encryption
+# Android fstab file for Samsung Galaxy View WiFi (gvwifi)
+#<src>                                                  <mnt_point>     <type>  <mnt_flags and options>                                                         <fs_mgr_flags>
 
-#<src>                                                  <mnt_point> <type>  <mnt_flags and options>                                                         <fs_mgr_flags>
-/dev/block/platform/13540000.dwmmc0/by-name/SYSTEM      /system     ext4    ro,noatime,errors=panic,noload,block_validity                                   wait,recoveryonly
-/dev/block/platform/13540000.dwmmc0/by-name/BOOT        /boot       emmc    defaults                                                                        defaults
-/dev/block/platform/13540000.dwmmc0/by-name/OTA         /misc       emmc    defaults                                                                        defaults
-/dev/block/platform/13540000.dwmmc0/by-name/RECOVERY    /recovery   emmc    defaults                                                                        defaults
-/dev/block/platform/13540000.dwmmc0/by-name/CPEFS       /cpefs      ext4    noatime,nosuid,nodev,noauto_da_alloc,discard,journal_async_commit,errors=panic  wait,check
-/dev/block/platform/13540000.dwmmc0/by-name/EFS         /efs        ext4    nosuid,nodev,noatime,noauto_da_alloc,discard,journal_async_commit,errors=panic  wait,check
-/dev/block/platform/13540000.dwmmc0/by-name/CACHE       /cache      f2fs    rw,nosuid,nodev,noatime,nodiratime,inline_xattr                                 wait,check
-/dev/block/platform/13540000.dwmmc0/by-name/CACHE       /cache      ext4    nosuid,nodev,noatime,noauto_da_alloc,discard,journal_async_commit,errors=panic  wait,check
-/dev/block/platform/13540000.dwmmc0/by-name/USERDATA    /data       f2fs    rw,nosuid,nodev,noatime,nodiratime,inline_xattr                                 wait,check,encryptable=footer
-/dev/block/platform/13540000.dwmmc0/by-name/USERDATA    /data       ext4    nosuid,nodev,noatime,noauto_da_alloc,discard,journal_async_commit,errors=panic  wait,check,encryptable=footer
+# System partition (first_stage_mount for early mounting)
+/dev/block/platform/13540000.dwmmc0/by-name/SYSTEM     /system         ext4    ro,errors=panic                                                                 wait,first_stage_mount
+# Note: No separate vendor partition - vendor is inside /system
+
+# Boot partitions
+/dev/block/platform/13540000.dwmmc0/by-name/BOOT        /boot           emmc    defaults                                                                        recoveryonly
+/dev/block/platform/13540000.dwmmc0/by-name/RECOVERY    /recovery       emmc    defaults                                                                        recoveryonly
+/dev/block/platform/13540000.dwmmc0/by-name/OTA         /misc           emmc    defaults                                                                        defaults
+
+# EFS partition (device-specific data) - removed journal_async_commit
+/dev/block/platform/13540000.dwmmc0/by-name/EFS         /efs            ext4    nosuid,nodev,noatime,noauto_da_alloc,discard,errors=panic                       wait,check
+
+# Cache partition - removed journal_async_commit
+/dev/block/platform/13540000.dwmmc0/by-name/CACHE       /cache          ext4    nosuid,nodev,noatime,noauto_da_alloc,discard,errors=panic                       wait,check,formattable
+
+# Data partition - removed journal_async_commit
+/dev/block/platform/13540000.dwmmc0/by-name/USERDATA    /data           ext4    nosuid,nodev,noatime,noauto_da_alloc,discard,errors=panic                 wait,check,formattable,fileencryption=aes-256-xts:aes-256-cts:v2
+
+# Metadata partition - repurposed HIDDEN partition (40MB ext4)
+# Required for aconfig flag storage and encryption keys
+# Note: NOT using first_stage_mount - this device has no AVB/DSU support
+/dev/block/platform/13540000.dwmmc0/by-name/HIDDEN      /metadata       ext4    noatime,nosuid,nodev,discard                                                    wait,check,formattable,first_stage_mount
 
 # VOLD
 /devices/13560000.dwmmc2/mmc_host/mmc*                  auto        auto    defaults                                                                        voldmanaged=sdcard1:auto,encryptable=userdata
 /devices/13510000.usb/usb*                              auto        auto    defaults                                                                        voldmanaged=usb:auto
 /devices/13520000.usb/usb*                              auto        auto    defaults                                                                        voldmanaged=usb:auto
 
-# ZRAM
-/dev/block/zram0                                        none        swap    defaults,discard                                                                zramsize=75%,max_comp_streams=4,swapprio=10,notrim
+# ZRAM swap
+/dev/block/zram0                                        none            swap    defaults                                                                        zramsize=1073741824,max_comp_streams=8

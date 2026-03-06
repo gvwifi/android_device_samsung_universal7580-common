@@ -33,6 +33,6 @@ cc_library_shared {
         "frameworks/native/libs/nativewindow/include",
         "frameworks/av/media/ndk/include",
         "frameworks/av/media/libstagefright/include",
-        "frameworks/av/media/libstagefright/foundation/include",
+        "frameworks/av/media/module/foundation/include",
     ],
 }

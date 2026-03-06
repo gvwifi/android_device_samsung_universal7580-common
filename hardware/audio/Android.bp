@@ -1,0 +1,9 @@
+// Keep only the header export module here.
+// The main audio.primary.universal7580 library is built via Android.mk
+// to allow Make-to-Make dependency on libsecril-client.
+
+cc_library_headers {
+    name: "libaudio_primary_universal7580_headers",
+    export_include_dirs: ["."],
+    vendor: true,
+}
