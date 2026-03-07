@@ -93,4 +93,10 @@ ndk::ScopedAStatus StreamCommon::removeEffect(
     return ndk::ScopedAStatus::fromExceptionCode(EX_UNSUPPORTED_OPERATION);
 }
 
+ndk::ScopedAStatus StreamCommon::createMmapBuffer(
+        ::aidl::android::hardware::audio::core::MmapBufferDescriptor* _aidl_return) {
+    (void)_aidl_return;
+    return ndk::ScopedAStatus::fromExceptionCode(EX_UNSUPPORTED_OPERATION);
+}
+
 }  // namespace aidl::android::hardware::audio::core

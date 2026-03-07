@@ -46,6 +46,8 @@ class StreamCommon : public BnStreamCommon {
             const std::shared_ptr<::aidl::android::hardware::audio::effect::IEffect>& in_effect) override;
     ndk::ScopedAStatus removeEffect(
             const std::shared_ptr<::aidl::android::hardware::audio::effect::IEffect>& in_effect) override;
+    ndk::ScopedAStatus createMmapBuffer(
+            ::aidl::android::hardware::audio::core::MmapBufferDescriptor* _aidl_return) override;
 
   private:
     std::mutex mLock;
