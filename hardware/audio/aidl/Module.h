@@ -117,7 +117,6 @@ class Module : public BnModule {
     audio_hw_device_t* mLegacyDevice = nullptr;
     const struct hw_module_t* mLegacyModule = nullptr;
 
-    bool mMicMute = false;
     bool mMasterMute = false;
     float mMasterVolume = 1.0f;
 
