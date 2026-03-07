@@ -54,7 +54,7 @@ USE_XML_AUDIO_POLICY_CONF := 1
 # Extracted with libbootimg
 BOARD_CUSTOM_BOOTIMG := true
 BOARD_CUSTOM_BOOTIMG_MK := $(LOCAL_PATH)/tools/mkbootimg.mk
-BOARD_MKBOOTIMG_ARGS := --kernel_offset 0x00008000 --ramdisk_offset 0x01000000 --tags_offset 0x00000100
+BOARD_MKBOOTIMG_ARGS := --kernel_offset 0x00008000 --ramdisk_offset 0x02000000 --tags_offset 0x00000100
 BOARD_MKBOOTIMG_ARGS += --kernel $(PRODUCT_OUT)/kernel
 BOARD_MKBOOTIMG_ARGS += --dt $(PRODUCT_OUT)/dt.img
 BOOTIMAGE_EXTRA_DEPS += $(PRODUCT_OUT)/dt.img
