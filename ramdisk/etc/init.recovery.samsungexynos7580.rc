@@ -1,7 +1,9 @@
 on init
     setprop sys.usb.configfs 1
-    # Set controller for configfs
+    # s3c_udc_otg USB Device Controller (Exynos 7580)
     setprop sys.usb.controller 13580000.usb
 
+# sideload uses minadbd (started by the recovery binary directly), not the
+# system adbd service.  Stop adbd so it does not compete for the FFS endpoints.
 on property:sys.usb.config=sideload && property:sys.usb.configfs=1
     stop adbd
