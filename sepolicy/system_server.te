@@ -59,3 +59,24 @@ get_prop(system_server, bluetooth_prop)
 get_prop(system_server, exported_camera_prop);
 get_prop(system_server, userspace_reboot_exported_prop);
 get_prop(system_server, userspace_reboot_config_prop);
+
+# debugfs access (memtrack, tracing)
+allow system_server debugfs:dir { open read };
+allow system_server debugfs:file { getattr open read };
+allow system_server debugfs_tracing_debug:file { open read };
+
+# GPS data files
+allow system_server gps_data_file:dir { add_name search write };
+allow system_server gps_data_file:fifo_file { open read setattr write };
+
+# Binder IPC
+allow system_server init:binder { call transfer };
+
+# proc / sysfs
+allow system_server proc:file { getattr open read };
+allow system_server sysfs:file { open read };
+allow system_server sysfs_input:file { open read };
+allow system_server sysfs_sensors:file { getattr open read };
+
+# vendor files
+allow system_server vendor_file:file { execute getattr open read };

@@ -1,0 +1,22 @@
+# vendor_init runs Samsung universal7580 vendor init scripts
+allow vendor_init apk_data_file:dir { add_name create getattr setattr write };
+allow vendor_init cgroup:file getattr;
+allow vendor_init debugfs_tracing_debug:file write;
+allow vendor_init default_prop:file read;
+allow vendor_init default_prop:property_service set;
+allow vendor_init emmcblk_device:blk_file getattr;
+allow vendor_init tmpfs:dir { add_name write };
+allow vendor_init tmpfs:lnk_file create;
+allow vendor_init kernel:system module_request;
+allow vendor_init media_userdir_file:dir { getattr setattr };
+allow vendor_init modemloader_prop:file read;
+allow vendor_init nfc_data_file:dir { getattr ioctl open read setattr };
+allow vendor_init radio_core_data_file:dir getattr;
+allow vendor_init radio_prop:property_service set;
+allow vendor_init system_data_file:dir { ioctl open read setattr };
+allow vendor_init system_data_file:file { open setattr write };
+allow vendor_init system_data_file:lnk_file { read setattr };
+allow vendor_init system_prop:property_service set;
+allow vendor_init vold_prop:property_service set;
+allow vendor_init wifi_data_file:dir { getattr setattr };
+allow vendor_init wpa_socket:dir getattr;

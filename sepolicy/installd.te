@@ -1,0 +1,2 @@
+# installd reads vendor files during package installation and dexopt
+allow installd vendor_file:file { getattr open read };

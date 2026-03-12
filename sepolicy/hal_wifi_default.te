@@ -6,3 +6,6 @@ allow hal_wifi_default wifi_efs_file:file r_file_perms;
 allow hal_wifi_default wifi_vendor_data_file:file r_file_perms;
 
 allow hal_wifi_default sysfs_wifi:file write;
+
+# wpa_supplicant HAL may request kernel modules
+allow hal_wifi_supplicant_default kernel:system module_request;

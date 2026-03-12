@@ -1,0 +1,2 @@
+# apexd reads vendor artifacts during APEX activation
+allow apexd vendor_file:file { getattr open read };

@@ -1,0 +1,2 @@
+# servicemanager reads vendor_service_contexts and odm_service_contexts from vendor
+allow servicemanager vendor_file:file { getattr open read };

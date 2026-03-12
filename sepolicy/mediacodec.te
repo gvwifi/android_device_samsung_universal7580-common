@@ -5,3 +5,5 @@ allow mediacodec vendor_file:file { read getattr open execute };
 
 # /sys/class/video4linux/*
 r_dir_file(mediacodec, sysfs_v4l);
+
+allow mediaswcodec vendor_file:file { execute getattr open read };

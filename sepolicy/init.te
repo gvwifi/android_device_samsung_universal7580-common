@@ -96,3 +96,26 @@ allow init proc_sec:file { rw_file_perms setattr };
 
 # Sockets
 allow init socket_device:sock_file { read write getattr setattr create unlink };
+
+# BPF filesystem access
+allow init fs_bpf:dir search;
+allow init fs_bpf_vendor:dir search;
+allow init fs_bpf_vendor:file read;
+
+# Hardware service management
+allow init hal_health_service:service_manager add;
+allow init hal_power_hwservice:hwservice_manager { add find };
+allow init hal_vibrator_hwservice:hwservice_manager { add find };
+allow init hidl_base_hwservice:hwservice_manager add;
+allow init hwservicemanager:binder { call transfer };
+
+# Binder IPC
+allow init servicemanager:binder { call transfer };
+allow init system_server:binder call;
+
+# Misc
+allow init init:netlink_kobject_uevent_socket { bind create getopt read setopt };
+allow init proc:file setattr;
+allow init same_process_hal_file:file execute;
+allow init sysfs:file open;
+allow init vendor_file:file { execute execute_no_trans };

@@ -54,3 +54,11 @@ allow gpsd node:tcp_socket node_bind;
 # hwservicemanager ready prop
 allow gpsd hwservicemanager:binder call;
 allow gpsd hwservicemanager_prop:file { open read getattr};
+
+allow gpsd default_prop:file { getattr open read };
+allow gpsd gps_data_file:file { create lock open write };
+allow gpsd hal_system_suspend_service:service_manager find;
+allow gpsd radio_prop:file { getattr open read };
+allow gpsd servicemanager:binder call;
+allow gpsd system_data_file:lnk_file read;
+allow gpsd system_file:file { getattr open read };

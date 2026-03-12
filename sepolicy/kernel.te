@@ -20,3 +20,9 @@ r_dir_file(kernel, wifi_efs_file);
 allow kernel tmpfs:dir search;
 
 allow kernel self:capability sys_module;
+
+# Device node creation (loop devices, dynamic nodes)
+allow kernel device:blk_file { create getattr setattr unlink };
+allow kernel device:chr_file { create setattr };
+allow kernel device:dir { add_name remove_name write };
+allow kernel vendor_file:file { getattr open read };

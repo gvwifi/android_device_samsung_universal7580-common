@@ -193,8 +193,9 @@ BOARD_USES_METADATA_PARTITION := true
 
 # SELinux
 SELINUX_IGNORE_NEVERALLOWS := true
-BOARD_SEPOLICY_DIRS += device/samsung/universal7580-common/sepolicy 
+BOARD_SEPOLICY_DIRS += device/samsung/universal7580-common/sepolicy
 BOARD_SEPOLICY_VERS := $(PLATFORM_SDK_VERSION).0
+SYSTEM_EXT_PRIVATE_SEPOLICY_DIRS += device/samsung/universal7580-common/sepolicy/private
 
 # Soong namespaces
 PRODUCT_SOONG_NAMESPACES += $(LOCAL_PATH) \

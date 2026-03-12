@@ -1,0 +1,2 @@
+# bpfloader loads BPF programs and may request kernel modules
+allow bpfloader kernel:system module_request;

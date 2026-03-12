@@ -1,0 +1,2 @@
+# gralloc allocator HAL reads default properties
+allow hal_graphics_allocator_default default_prop:file { getattr open read };

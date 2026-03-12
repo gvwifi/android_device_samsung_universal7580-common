@@ -42,3 +42,5 @@ allow vendor_toolbox {
     wifi_efs_file
     unlabeled
 }:file { r_file_perms setattr };
+
+allow vendor_toolbox vendor_toolbox:capability dac_override;

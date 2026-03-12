@@ -3,3 +3,5 @@
 #allow hwservicemanager gpsd:file { read open };
 #allow hwservicemanager gpsd:process getattr;
 #allow hwservicemanager gpsd:binder transfer;
+
+allow hwservicemanager vendor_file:file { getattr open read };

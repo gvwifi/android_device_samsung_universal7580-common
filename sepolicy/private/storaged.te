@@ -1,0 +1,5 @@
+# storaged <-> init binder: hardware service proxy pattern on universal7580
+# android.hardware.health HAL is a passthrough HIDL on this older kernel, it
+# calls back into init / storaged via binder to report disk I/O stats.
+allow storaged init:binder { call transfer };
+allow init storaged:binder call;

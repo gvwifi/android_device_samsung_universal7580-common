@@ -9,3 +9,7 @@ r_dir_file(vold, proc_dt_firmware)
 
 # sswap
 allow vold sysfs_sswap:file w_file_perms;
+
+allow vold kernel:system module_request;
+allow vold vendor_file:file { getattr open read };
+allow vold_prepare_subdirs vendor_file:file { getattr open read };

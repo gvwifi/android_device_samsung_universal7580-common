@@ -1,1 +1,6 @@
 get_prop(appdomain, exported_camera_prop);
+
+allow isolated_app content_capture_service:service_manager find;
+allow platform_app vendor_file:file { execute getattr open read };
+allow priv_app vendor_file:file { execute getattr open read };
+allow untrusted_app vendor_file:file { execute getattr open read };

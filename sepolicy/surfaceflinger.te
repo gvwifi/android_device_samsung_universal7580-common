@@ -2,3 +2,6 @@
 #allow surfaceflinger secmem_device:chr_file rw_file_perms;
 #allow surfaceflinger sysfs_graphics:file rw_file_perms;
 r_dir_file(surfaceflinger, sysfs_graphics)
+allow surfaceflinger init:binder call;
+allow surfaceflinger vendor_default_prop:file { getattr open };
+allow surfaceflinger vendor_file:file { execute getattr open read };

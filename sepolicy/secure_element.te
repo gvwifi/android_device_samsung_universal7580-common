@@ -1,0 +1,2 @@
+# secure_element service opens system data files
+allow secure_element system_data_file:file open;
