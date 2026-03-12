@@ -138,10 +138,12 @@ PRODUCT_PACKAGES += \
     libMcRegistry
 
 # Power
-# Device-specific minimal HIDL 1.0 power HAL.
-# CPU governor tuning is handled by init.power.rc via sysfs.
+# AIDL Power HAL stub — required so that HintManagerService in system_server
+# can obtain a non-null IPower binder and safely query getSupportInfo().
+# All advanced features (hint sessions, headroom) are reported as unsupported.
+# CPU governor tuning is handled directly by init.power.rc via sysfs.
 PRODUCT_PACKAGES += \
-    android.hardware.power@1.0-service.universal7580
+    android.hardware.power-service.universal7580
 
 
 # Permissions

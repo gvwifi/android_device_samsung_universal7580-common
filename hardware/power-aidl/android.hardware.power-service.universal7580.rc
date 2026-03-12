@@ -1,0 +1,5 @@
+service vendor.power-aidl-universal7580 /vendor/bin/hw/android.hardware.power-service.universal7580
+    class hal
+    user nobody
+    group system
+    capabilities SYS_NICE

@@ -1,4 +1,4 @@
-// Copyright (C) 2024 The LineageOS Project
+// Copyright (C) 2025 The LineageOS Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,14 +17,15 @@ package {
 }
 
 cc_binary {
-    name: "android.hardware.power@1.0-service.universal7580",
-    defaults: ["hidl_defaults"],
-    proprietary: true,
+    name: "android.hardware.power-service.universal7580",
+    defaults: ["android.hardware.power-ndk_shared"],
     relative_install_path: "hw",
-    init_rc: ["android.hardware.power@1.0-service.universal7580.rc"],
+    vendor: true,
+    init_rc: ["android.hardware.power-service.universal7580.rc"],
+    vintf_fragments: ["android.hardware.power-service.universal7580.xml"],
     srcs: [
+        "main.cpp",
         "Power.cpp",
-        "service.cpp",
     ],
     cflags: [
         "-Wall",
@@ -33,9 +34,8 @@ cc_binary {
         "-Wno-unused-parameter",
     ],
     shared_libs: [
+        "libbase",
+        "libbinder_ndk",
         "liblog",
-        "libutils",
-        "libhidlbase",
-        "android.hardware.power@1.0",
     ],
 }
