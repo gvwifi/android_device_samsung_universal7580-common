@@ -190,19 +190,23 @@ ndk::ScopedAStatus Vibrator::alwaysOnDisable(int32_t /*id*/) {
     return ndk::ScopedAStatus::fromExceptionCode(EX_UNSUPPORTED_OPERATION);
 }
 
-ndk::ScopedAStatus Vibrator::getResonantFrequency(float* /*resonantFreqHz*/) {
+ndk::ScopedAStatus Vibrator::getResonantFrequency(float* resonantFreqHz) {
+    *resonantFreqHz = 0.0f;
     return ndk::ScopedAStatus::fromExceptionCode(EX_UNSUPPORTED_OPERATION);
 }
 
-ndk::ScopedAStatus Vibrator::getQFactor(float* /*qFactor*/) {
+ndk::ScopedAStatus Vibrator::getQFactor(float* qFactor) {
+    *qFactor = 0.0f;
     return ndk::ScopedAStatus::fromExceptionCode(EX_UNSUPPORTED_OPERATION);
 }
 
-ndk::ScopedAStatus Vibrator::getFrequencyResolution(float* /*freqResolutionHz*/) {
+ndk::ScopedAStatus Vibrator::getFrequencyResolution(float* freqResolutionHz) {
+    *freqResolutionHz = 0.0f;
     return ndk::ScopedAStatus::fromExceptionCode(EX_UNSUPPORTED_OPERATION);
 }
 
-ndk::ScopedAStatus Vibrator::getFrequencyMinimum(float* /*freqMinimumHz*/) {
+ndk::ScopedAStatus Vibrator::getFrequencyMinimum(float* freqMinimumHz) {
+    *freqMinimumHz = 0.0f;
     return ndk::ScopedAStatus::fromExceptionCode(EX_UNSUPPORTED_OPERATION);
 }
 

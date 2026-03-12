@@ -30,4 +30,4 @@
 /devices/13520000.usb/usb*                              auto        auto    defaults                                                                        voldmanaged=usb:auto
 
 # ZRAM swap
-/dev/block/zram0                                        none            swap    defaults                                                                        zramsize=1073741824,max_comp_streams=8
+/dev/block/zram0                                        none            swap    defaults                                                                        wait,zramsize=1073741824,max_comp_streams=8

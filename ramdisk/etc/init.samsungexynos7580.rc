@@ -32,7 +32,22 @@ on init
     mkdir /storage/emulated 0555 root root
 
     # CPUSETS permission
-    chmod 0660 /dev/cpuctl
+    # Make /dev/cpuctl accessible so libprocessgroup can write cgroup.procs
+    # in per-category subdirs (top-app, foreground, background, etc.).
+    # The subdirs themselves are created by libprocessgroup_setup during early
+    # init; we just need to fix ownership so system processes can use them.
+    chown system system /dev/cpuctl
+    chmod 0755 /dev/cpuctl
+    chown system system /dev/cpuctl/foreground/cgroup.procs
+    chmod 0664 /dev/cpuctl/foreground/cgroup.procs
+    chown system system /dev/cpuctl/background/cgroup.procs
+    chmod 0664 /dev/cpuctl/background/cgroup.procs
+    chown system system /dev/cpuctl/top-app/cgroup.procs
+    chmod 0664 /dev/cpuctl/top-app/cgroup.procs
+    chown system system /dev/cpuctl/system/cgroup.procs
+    chmod 0664 /dev/cpuctl/system/cgroup.procs
+    chown system system /dev/cpuctl/system-background/cgroup.procs
+    chmod 0664 /dev/cpuctl/system-background/cgroup.procs
     mkdir /dev/cpuset/foreground
     copy /dev/cpuset/cpus /dev/cpuset/foreground/cpus
     copy /dev/cpuset/mems /dev/cpuset/foreground/mems
@@ -906,6 +921,12 @@ service watchdogd /sbin/watchdogd 10 20
     disabled
     user root
     seclabel u:r:watchdogd:s0
+
+# Safety valve: if mmd announces itself after swapon_all has already run,
+# re-run swapon_all so zram is guaranteed to be active regardless of whether
+# mmd managed to set it up on this 3.10 kernel.
+on property:mmd.enabled_aconfig=*
+    swapon_all /vendor/etc/fstab.samsungexynos7580
 
 # on userdebug and eng builds, enable kgdb on the serial console
 on property:ro.debuggable=1
